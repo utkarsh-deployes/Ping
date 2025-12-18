@@ -8,5 +8,3 @@ __pycache__/
 # Secrets
 .env
 
-# Local data
-jobs_seen.csv
