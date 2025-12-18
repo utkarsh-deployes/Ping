@@ -1,52 +1,31 @@
 import requests
-import csv
 import os
 import smtplib
 from email.mime.text import MIMEText
-from dotenv import load_dotenv
 
-# =====================
-# LOAD ENV (local .env OR GitHub Secrets)
-# =====================
-load_dotenv()
-
-# =====================
-# CONFIG
-# =====================
 API_URL = "https://remotive.com/api/remote-jobs"
-CSV_FILE = "jobs_seen.csv"
 
 KEYWORDS = [
-    "python", "data", "analyst", "ai", "backend", "software",
-    "developer", "engineer", "machine learning", "ml",
-    "automation", "platform", "infra", "cloud", "devops", "devops engineer", "intern", "internship", "research"
+    "python", "data", "analyst", "ai", "backend",
+    "software", "developer", "engineer", "machine learning", "ml"
 ]
 
-# =====================
-# EMAIL (ENV VARS ONLY)
-# =====================
 SENDER_EMAIL = os.getenv("SENDER_EMAIL")
 RECEIVER_EMAIL = os.getenv("RECEIVER_EMAIL")
 EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD")
 
-# =====================
-# FETCH JOBS
-# =====================
-def get_jobs():
-    response = requests.get(API_URL, timeout=15)
-    response.raise_for_status()
-    return response.json()["jobs"]
 
-# =====================
-# FILTER
-# =====================
+def get_jobs():
+    res = requests.get(API_URL, timeout=15)
+    res.raise_for_status()
+    return res.json()["jobs"]
+
+
 def is_relevant(title):
     title = title.lower()
     return any(k in title for k in KEYWORDS)
 
-# =====================
-# EMAIL
-# =====================
+
 def send_email(jobs):
     if not all([SENDER_EMAIL, RECEIVER_EMAIL, EMAIL_PASSWORD]):
         print("❌ Email credentials missing")
@@ -57,7 +36,7 @@ def send_email(jobs):
         body += f"{job['title']} | {job['company_name']}\n{job['url']}\n\n"
 
     msg = MIMEText(body)
-    msg["Subject"] = "🔥 New Relevant Jobs Found"
+    msg["Subject"] = "🔥 Daily Job Tracker"
     msg["From"] = SENDER_EMAIL
     msg["To"] = RECEIVER_EMAIL
 
@@ -67,9 +46,7 @@ def send_email(jobs):
 
     print("📧 Email sent successfully")
 
-# =====================
-# MAIN
-# =====================
+
 def main():
     jobs = get_jobs()
 
@@ -81,9 +58,10 @@ def main():
 
     if relevant_jobs:
         send_email(relevant_jobs)
-        print(f"🔥 {len(relevant_jobs)} relevant jobs found")
+        print(f"🔥 {len(relevant_jobs)} relevant jobs emailed")
     else:
-        print("😴 No new relevant jobs today")
+        print("😴 No relevant jobs today")
+
 
 if __name__ == "__main__":
     main()

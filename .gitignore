@@ -1,7 +1,4 @@
-# Python
-__pycache__/
-.venv/
-*.pyc
-
-# Secrets
 .env
+.venv/
+__pycache__/
+*.pyc
