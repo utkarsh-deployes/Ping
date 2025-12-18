@@ -5,6 +5,9 @@ on:
     - cron: "30 3 * * *"   # 09:00 AM IST
   workflow_dispatch:
 
+permissions:
+  contents: write   # 🔑 REQUIRED to push commits
+
 jobs:
   run-tracker:
     runs-on: ubuntu-latest
